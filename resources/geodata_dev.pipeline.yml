@@ -1,0 +1,14 @@
+# The main pipeline for geodata_dev
+resources:
+  pipelines:
+    geodata_dev_pipeline:
+      name: geodata_dev_pipeline
+      catalog: geodata_dev
+      schema: geodata_dev_${bundle.target}
+      serverless: true
+      libraries:
+        - notebook:
+            path: ../src/dlt_pipeline.ipynb
+
+      configuration:
+        bundle.sourcePath: ${workspace.file_path}/src
