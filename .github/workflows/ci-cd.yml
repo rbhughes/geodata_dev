@@ -1,10 +1,12 @@
-name: CI/CD to Databricks
+name: Databricks CI/CD Pipeline
 
 on:
   push:
     branches:
       - main
   pull_request:
+    branches:
+      - main
 
 jobs:
   build-test-deploy:
@@ -13,19 +15,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.13'
-
-      - name: Install Databricks CLI
-        run: pip install databricks-cli
+      - name: Set up Databricks CLI
+        uses: databricks/setup-cli@main
 
       - name: Validate Databricks bundle
         run: databricks bundle validate
-
-      - name: Deploy to Databricks
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+
+      - name: Deploy Databricks bundle
+        if: github.ref == 'refs/heads/main'
         run: databricks bundle deploy
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
